@@ -27,6 +27,8 @@ class ModuleParser:
 
             nn.Conv2d: self.__convolution__,
 
+            nn.Linear: self.__linear__,
+
             nn.ReLU: self.__activation__,
             nn.Tanh: self.__activation__,
             nn.Sigmoid: self.__activation__,
@@ -100,10 +102,11 @@ class ModuleParser:
         network = builder.create_network()
 
         net = self.__input__(network, num_channels, height, width)
-        if type(module) in self.mapping:
-            net = self.mapping[type(module)](network, net, module)
-        else:
-            raise ValueError('Invalid module subtype: {}'.format(type(module)))
+        for module in module.children():
+            if type(module) in self.mapping:
+                net = self.mapping[type(module)](network, net, module)
+            else:
+                raise ValueError('Invalid module subtype: {}'.format(type(module)))
 
         network.mark_output(net)
 
