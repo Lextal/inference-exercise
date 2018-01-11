@@ -165,3 +165,10 @@ cuda.memcpy_dtoh_async(output, d_output, stream)
 # syncronize threads
 stream.synchronize()
 print("Prediction: " + str(np.argmax(output)))
+
+assert trt.utils.write_engine_to_file("./alexnet.engine", engine.serialize())
+new_engine = trt.utils.load_engine(G_LOGGER, "./alexnet.engine")
+context.destroy()
+engine.destroy()
+new_engine.destroy()
+runtime.destroy()
